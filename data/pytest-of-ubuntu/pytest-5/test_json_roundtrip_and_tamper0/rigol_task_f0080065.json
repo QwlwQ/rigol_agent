@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "task_id": "f0080065-bff1-4328-901e-7850e437c683",
+  "task_name": "rigol_task",
+  "description": "测量 CH2 的电压峰峰值",
+  "knowledge_profile": "demo",
+  "knowledge_digest": "e47f7a4c269e4d3eb17c81a7c4db0a6b74b30a3042916a22959aa6bb5b1e4f21",
+  "status": "VALIDATED",
+  "tasks": [
+    {
+      "task_name": "measurement",
+      "workflow": "measurement",
+      "parameters": {
+        "channel": "CH2",
+        "item": "Peak-to-Peak",
+        "category": "Vertical"
+      },
+      "steps": [
+        {
+          "component": "CH2",
+          "action": "click"
+        },
+        {
+          "component": "Measure",
+          "action": "click"
+        },
+        {
+          "component": "Peak-to-Peak",
+          "action": "click"
+        },
+        {
+          "component": "Close-Measurement",
+          "action": "click"
+        }
+      ]
+    }
+  ]
+}

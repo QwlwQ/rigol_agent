@@ -1,0 +1,4 @@
+timeout: 30
+retries: 2
+structured_output: json_object
+# Use json_schema if supported by your provider.

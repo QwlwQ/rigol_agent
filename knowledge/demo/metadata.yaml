@@ -1,0 +1,4 @@
+metadata:
+  profile: demo
+  verified: false
+  source: 需求中的示例，仅用于开发阶段演示，LLM 仍通过在线 API 调用

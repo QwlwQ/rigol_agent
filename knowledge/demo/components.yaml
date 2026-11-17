@@ -1,0 +1,111 @@
+components:
+  # Channel display controls
+  - name: CH1
+    aliases: [ch1, 通道1, 第一通道, 一号通道, 第1通道]
+    actions: [click]
+    kind: channel
+
+  - name: CH2
+    aliases: [ch2, 通道2, 第二通道, 二号通道, 第2通道]
+    actions: [click]
+    kind: channel
+
+  - name: CH3
+    aliases: [ch3, 通道3, 第三通道, 三号通道, 第3通道]
+    actions: [click]
+    kind: channel
+
+  - name: CH4
+    aliases: [ch4, 通道4, 第四通道, 四号通道, 第4通道]
+    actions: [click]
+    kind: channel
+
+  # Measurement entry and categories
+  - name: Measure
+    aliases: [measure, 测量, 测量键, 测量菜单]
+    actions: [click]
+    kind: menu
+
+  - name: Close-Measurement
+    aliases: [close-measurement, close measurement, 关闭测量, 关闭测量界面, 关闭测量菜单]
+    actions: [click]
+    kind: menu
+
+  - name: Vertical
+    aliases: [vertical, 垂直, 垂直测量]
+    actions: [click]
+    kind: measurement_category
+
+  - name: Horizontal
+    aliases: [horizontal, 水平, 水平测量]
+    actions: [click]
+    kind: measurement_category
+
+  - name: Other
+    aliases: [other, 其它, 其他, 其它测量, 其他测量]
+    actions: [click]
+    kind: measurement_category
+
+  # Vertical measurements. These are available directly after opening
+  # measurement selection when the instrument is already on Vertical.
+  - name: Maximum
+    aliases: [maximum, max, 最大值, 最大]
+    actions: [click]
+    kind: measurement
+
+  - name: Minimum
+    aliases: [minimum, min, 最小值, 最小]
+    actions: [click]
+    kind: measurement
+
+  - name: Peak-to-Peak
+    aliases: [peak-to-peak, peak to peak, p-p, 峰峰值, 峰峰电压, 峰峰]
+    actions: [click]
+    kind: measurement
+
+  - name: Top
+    aliases: [top, 顶端值, 顶部值]
+    actions: [click]
+    kind: measurement
+
+  - name: Base
+    aliases: [base, 底端值, 底部值]
+    actions: [click]
+    kind: measurement
+
+  - name: Amplitude
+    aliases: [amplitude, 幅度值, 幅度]
+    actions: [click]
+    kind: measurement
+
+  # Horizontal measurements
+  - name: Period
+    aliases: [period, 周期]
+    actions: [click]
+    kind: measurement
+
+  - name: Frequency
+    aliases: [frequency, 频率]
+    actions: [click]
+    kind: measurement
+
+  - name: Positive-Duty
+    aliases: [positive-duty, positive duty, 正占空比, 正向占空比]
+    actions: [click]
+    kind: measurement
+
+  - name: Negative-Duty
+    aliases: [negative-duty, negative duty, 负占空比, 负向占空比]
+    actions: [click]
+    kind: measurement
+
+  # Other measurements
+  - name: Delay
+    aliases: [delay, 延迟, 延时]
+    actions: [click]
+    kind: measurement
+
+  - name: Phase
+    aliases: [phase, 相位]
+    actions: [click]
+    kind: measurement

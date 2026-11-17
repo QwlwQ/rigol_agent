@@ -1,0 +1,34 @@
+workflows:
+  click_component:
+    description: 点击指定组件
+    phrases: [点击, 切换到]
+    parameters:
+      component:
+        kind: component
+        required: true
+    steps:
+      - component: '{component}'
+        action: click
+
+  measurement:
+    description: 无状态测量流程：选择通道、打开测量菜单、选择测量分类和测量项
+    phrases: [测量, 测一下]
+    parameters:
+      channel:
+        kind: channel
+        required: true
+      category:
+        kind: measurement_category
+        required: true
+      item:
+        kind: measurement
+        required: true
+    steps:
+      - component: '{channel}'
+        action: click
+      - component: Measure
+        action: click
+      - component: '{category}'
+        action: click
+      - component: '{item}'
+        action: click
