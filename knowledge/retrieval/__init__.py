@@ -1,0 +1,1 @@
+"""Knowledge retrieval extension package."""

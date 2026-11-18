@@ -1,0 +1,79 @@
+参数
+出厂值
+偏移
+0 div
+灵敏度
+300 mdiv
+CH1 阈值
+0 V
+CH2 阈值
+0 V
+CH3 阈值
+0 V
+CH4 阈值
+0 V
+Intg
+运算
+OFF
+信源
+CH1
+档位
+500 mV*s
+偏移
+0 V*s
+积分偏移
+0 V
+Diff
+运算
+OFF
+信源
+CH1
+档位
+500 mV/s
+偏移
+0 V/s
+微分平滑
+5
+Sqrt
+运算
+OFF
+信源
+CH1
+档位
+500 mU
+偏移
+0 U
+Lg
+运算
+OFF
+信源
+CH1
+档位
+500 mU
+偏移
+0 U
+Ln
+运算
+OFF
+信源
+CH1
+档位
+500 mU
+偏移
+0 U
+Exp
+运算
+OFF
+信源
+CH1
+档位
+500 mU
+偏移
+0 U
+Abs
+运算
+OFF
+信源
+CH1
+ | 附录 | 
+216

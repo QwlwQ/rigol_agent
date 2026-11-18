@@ -1,0 +1,9 @@
+{
+  "input": "data/parsed/DHO804",
+  "output": "data/parsed/DHO804_clean",
+  "page_count": 234,
+  "image_count": 926,
+  "selected_images": 232,
+  "filtered_images": 694,
+  "removed_repeated_lines": 2
+}

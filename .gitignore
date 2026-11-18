@@ -6,3 +6,5 @@ __pycache__/
 data/tasks/*.json
 data/legacy_tasks/*.json
 data/history/*.jsonl
+data/perception_results/
+data/perception_eval/

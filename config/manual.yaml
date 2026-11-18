@@ -1,0 +1,26 @@
+device: DHO804
+source_dir: data/manuals/DHO804
+parsed_dir: data/parsed/DHO804
+knowledge_dir: data/knowledge/DHO804
+index_dir: data/index/DHO804
+
+parse_scope:
+  chapters: []
+  include_patterns: []
+  exclude_patterns: []
+  page_ranges: []
+
+retrieval_scope:
+  chapters: []
+  include_patterns: []
+  exclude_patterns: []
+  page_ranges: []
+
+preserve:
+  source_page: true
+  source_section: true
+  source_text: true
+  source_image: true
+  source_table: true
+  extraction_method: true
+  verification_status: true

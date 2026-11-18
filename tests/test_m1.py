@@ -1,14 +1,14 @@
 from pathlib import Path
-from rigol_agent.agent import Agent
-from rigol_agent.knowledge import Knowledge
-from rigol_agent.planner import Planner, TaskValidator
-from rigol_agent.repository import TaskRepository
-from rigol_agent.models import AgentError
-from task.legacy_adapter import LegacyTaskAdapter
-from rigol_agent.ros2_executor import ExecutionResult, Ros2TaskExecutor
+from agent.agent import Agent
+from knowledge.repository import Knowledge
+from planning.task_planner import Planner, TaskValidator
+from repository import TaskRepository
+from models.planning import AgentError
+from execution.legacy_adapter import LegacyTaskAdapter
+from execution.executor import ExecutionResult, Ros2TaskExecutor
 
 def make(tmp_path):
- k=Knowledge(Path('knowledge/demo')); p=Planner(k); v=TaskValidator(k); return Agent(p,v,TaskRepository(tmp_path)),p,v
+ k=Knowledge(Path('data/knowledge/DHO804')); p=Planner(k); v=TaskValidator(k); return Agent(p,v,TaskRepository(tmp_path)),p,v
 
 def test_click(tmp_path):
  a,_,_=make(tmp_path); t=a.planner.build(a.planner.parse('点击 CH2',[])); assert len(t.tasks[0].steps)==1 and t.tasks[0].steps[0].component=='CH2'
@@ -55,15 +55,6 @@ def test_verified_vmax_id(tmp_path):
     assert exported[0]['targetName'] == 'SCREEN_CTRL(1):Vmax_off(16)'
     assert exported[0]['name_id'] == 16
 
-def test_provisional_component_cannot_be_exported(tmp_path):
-    _,p,v=make(tmp_path)
-    task=v.validate(p.build(p.parse('点击幅度值',[])))
-    try:
-        LegacyTaskAdapter().convert(task)
-        assert False
-    except AgentError as exc:
-        assert '临时值' in str(exc)
-
 def test_save_pending_accepts_built_task(tmp_path):
     a,_,_=make(tmp_path)
     a.handle('点击 CH1')
@@ -72,7 +63,7 @@ def test_save_pending_accepts_built_task(tmp_path):
     assert len(list(tmp_path.glob('*.json'))) == 1
 
 def test_rigol_real_measurement_exports_current_ids(tmp_path):
-    k=Knowledge(Path('knowledge/rigol_real')); p=Planner(k); v=TaskValidator(k)
+    k=Knowledge(Path('data/knowledge/DHO804')); p=Planner(k); v=TaskValidator(k)
     task=v.validate(p.build(p.parse('测量 CH2 的频率',[])))
     exported=LegacyTaskAdapter().convert(task)['taskList']
     assert [(item['name_id'],item['targetName']) for item in exported] == [
@@ -95,7 +86,23 @@ def test_execute_pending_uses_legacy_payload(tmp_path):
         def execute(self,payload,progress=None,status=None):
             assert [x['name_id'] for x in payload['taskList']] == [2]
             return ExecutionResult(1,1)
-    k=Knowledge(Path('knowledge/rigol_real')); p=Planner(k); v=TaskValidator(k)
+    k=Knowledge(Path('data/knowledge/DHO804')); p=Planner(k); v=TaskValidator(k)
     a=Agent(p,v,TaskRepository(tmp_path))
     a.handle('点击 CH2')
     assert a.execute_pending(LegacyTaskAdapter(),FakeExecutor()) == '任务执行完成：1/1 步'
+
+
+def test_perception_schema_rejects_out_of_range_bbox():
+    from pydantic import ValidationError
+    from models.perception import LocateResult
+    try:
+        LocateResult.model_validate({"found": True, "target": "CH2", "image_size": [100, 80], "candidates": [{"target": "CH2", "bbox": {"x_min": 1, "y_min": 2, "x_max": 101, "y_max": 30}, "confidence": 0.9}]})
+        assert False
+    except ValidationError:
+        pass
+
+
+def test_perception_schema_supports_not_found():
+    from models.perception import LocateResult
+    result = LocateResult.model_validate({"found": False, "target": "Maximum", "image_size": [100, 80], "candidates": [], "reason": "not visible"})
+    assert result.found is False

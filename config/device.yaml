@@ -1,0 +1,3 @@
+device: DHO804
+knowledge_dir: data/knowledge/DHO804
+phase1_execution_enabled: false

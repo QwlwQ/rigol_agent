@@ -1,0 +1,42 @@
+22
+远程控制
+远程控制本仪器主要有以下几种方式：
+•
+用户自定义编程
+用户可以通过标准 SCPI（Standard Commands for Programmable Instruments）命
+令对仪器进行编程控制。有关命令和编程的详细说明请参考本系列产品的《编程手
+册》。
+•
+使用PC 软件
+用户可以使用 PC 软件发送SCPI 命令对仪器进行远程控制。推荐使用 RIGOL 提供的 PC
+软件 Ultra Sigma。您可以登录 RIGOL 官网（http://www.rigol.com）下载该软件。
+操作步骤：
+-
+建立仪器与计算机的通信。
+-
+运行 Ultra Sigma 并搜索仪器资源。
+-
+打开远程命令控制面板，发送命令。
+•
+Web Control 远程控制
+本产品支持 Web Control 远程控制。连接网络时，Web Control 实时显示仪器屏幕中
+显示的界面，用户可通过 Web Control 将仪器控制迁移到控制端上（包括 PC 端、手机
+端和 iPad 等智能端），从而实现远程控制仪器。通过Web Control 更改网络配置时需
+要登录，首次登录 Web Control 的用户名和密码分别为“admin”和“rigol”。
+本设备支持通过USB 接口和LAN 接口与计算机进行通信从而实现远程控制。
+本章将详细介绍如何使用 RIGOL 提供的 Ultra Sigma 软件通过各种接口对仪器进行远程控
+制。
+注意
+连接通信电缆之前，请将仪器关机，以免损坏仪器的通信接口。
+22.1
+通过USB 控制
+1. 连接设备
+使用 USB 数据线将仪器后面板的USB DEVICE 接口与计算机的USB HOST 接口相连。
+2. 搜索设备资源
+打开 Ultra Sigma，软件将自动搜索当前通过USB 接口连接至PC 的仪器资源，您也可以
+点击 USB-TMC 进行搜索。
+3. 查看设备资源
+ | 远程控制 | 
+版权所有©普源精电科技股份有限公司
+DHO800 用户手册
+205

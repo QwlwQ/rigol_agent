@@ -1,0 +1,24 @@
+{
+  "source_file": "data/manuals/DHO804/DHO804.pdf",
+  "page_number": 1,
+  "text": "",
+  "text_blocks": [],
+  "images": [
+    {
+      "path": "data/parsed/DHO804/images/page_0001_image_001.jpeg",
+      "xref": 6,
+      "bbox": [
+        -0.20219039916992188,
+        -5.0,
+        595.477783203125,
+        837.3999633789062
+      ],
+      "width": 2482,
+      "height": 3510
+    }
+  ],
+  "source": {
+    "file": "data/manuals/DHO804/DHO804.pdf",
+    "page": 1
+  }
+}

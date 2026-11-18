@@ -1,0 +1,85 @@
+3. 延迟（r-f）：源A 上升沿与源B 下降沿在门限中间值处的时间差。负延迟表示源A 的上
+升沿出现在源B 的下降沿之后。
+4. 延迟（f-r）：源A 下降沿与源B 上升沿在门限中间值处的时间差。负延迟表示源A 的下
+降沿出现在源B 的上升沿之后。
+5. 相位（r-r）：源A 上升沿与源B 上升沿在门限中间值处的相位差，以度表示。计算公式
+为：
+°
+360
+×
+=
+sourceA
+R
+R
+R
+R
+Period
+B
+DelayA
+B
+PhaseA
+其中，PhaseARBR 为相位（r-r），DelayARBR 为延迟（r-r），PeriodsourceA 为源A 的
+周期。
+6. 相位（f-f）：源A 下降沿与源B 下降沿在门限中间值处的相位差，以度表示。计算公式
+为：
+°
+360
+×
+=
+sourceA
+F
+F
+F
+F
+Period
+B
+DelayA
+B
+PhaseA
+其中，PhaseAFBF 为相位（f-f），DelayAFBF 为延迟（f-f），PeriodsourceA 为源A 的周
+期。
+7. 相位（r-f）：源A 上升沿与源B 下降沿在门限中间值处的相位差，以度表示。计算公式
+为：
+°
+360
+×
+=
+sourceA
+F
+R
+F
+R
+Period
+B
+DelayA
+B
+PhaseA
+其中，PhaseARBF 为相位（r-f），DelayARBF 为延迟（r-f），PeriodsourceA 为源A 的周
+期。
+8. 相位（f-r）：源A 下降沿与源B 上升沿在门限中间值处的相位差，以度表示。计算公式
+为：
+°
+360
+×
+=
+sourceA
+R
+F
+R
+F
+Period
+B
+DelayA
+B
+PhaseA
+其中，PhaseAFBR 为相位（f-r），DelayAFBR 为延迟（f-r），PeriodsourceA 为源A 的周
+期。
+提示
+•
+源A 和源B 可以是CH1~CH4、Math1~Math4 中的任一通道。
+•
+门限中间值的默认值为50%。
+ | 测量 | 
+版权所有©普源精电科技股份有限公司
+DHO800 用户手册
+115

@@ -1,0 +1,46 @@
+{
+  "source_file": "data/manuals/DHO804/DHO804.pdf",
+  "page_number": 234,
+  "text": "",
+  "text_blocks": [],
+  "images": [
+    {
+      "path": "data/parsed/DHO804/images/page_0234_image_001.jpeg",
+      "xref": 4322,
+      "bbox": [
+        0.037830352783203125,
+        2.79998779296875,
+        595.23779296875,
+        844.7200317382812
+      ],
+      "width": 2480,
+      "height": 3508
+    }
+  ],
+  "source": {
+    "file": "data/manuals/DHO804/DHO804.pdf",
+    "page": 234
+  },
+  "cleaning": {
+    "removed_repeated_lines": 2,
+    "image_manifest": [
+      {
+        "path": "data/parsed/DHO804/images/page_0234_image_001.jpeg",
+        "page": 234,
+        "width": 2480,
+        "height": 3508,
+        "area": 8699840,
+        "aspect_ratio": 1.415,
+        "sha256": "124b3a8d4a875520a0eb8262d848891fe655ee428182dab296c6ae12916e06b9",
+        "bbox": [
+          0.037830352783203125,
+          2.79998779296875,
+          595.23779296875,
+          844.7200317382812
+        ],
+        "status": "selected",
+        "reason": []
+      }
+    ]
+  }
+}
