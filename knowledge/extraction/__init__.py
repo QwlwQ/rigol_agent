@@ -1,1 +1,0 @@
-"""Knowledge extraction extension package."""

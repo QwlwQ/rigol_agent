@@ -1,4 +1,6 @@
-# Rigol Visual Agent
+# Rigol Visual Agent（历史总体设计）
+
+> 本文件保留项目早期总体设计和后续设想，不是当前代码结构的权威入口。当前实现以 `README.md`、`docs/PHASE1_TEST_COMMANDS.md`、`docs/PHASE2_MANUAL_KNOWLEDGE.md` 和 `docs/PHASE3_KNOWLEDGE_PERCEPTION.md` 为准。
 
 ## 项目开发说明与总体架构
 

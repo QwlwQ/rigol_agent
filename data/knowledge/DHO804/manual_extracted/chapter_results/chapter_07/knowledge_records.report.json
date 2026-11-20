@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_07": {
+      "title": "设置采样系统",
+      "chunks": 8,
+      "records": 38,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_07/knowledge_chapter_07.jsonl"
+    }
+  },
+  "unassigned_chunks": 227,
+  "total_records": 38
+}

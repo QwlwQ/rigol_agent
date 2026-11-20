@@ -1,29 +1,67 @@
+"""Small registry for the active Phase 3 knowledge and observation tools."""
 from dataclasses import dataclass
 from typing import Any, Callable
-from models.planning import AgentError
+
+from models.errors import AgentError
+
+
 @dataclass(frozen=True)
 class Tool:
- name:str; description:str; parameters:dict; handler:Callable[...,Any]; requires_confirmation:bool=False
- def schema(self): return {"type":"function","function":{"name":self.name,"description":self.description,"parameters":self.parameters,"strict":True}}
+    name: str
+    description: str
+    parameters: dict
+    handler: Callable[..., Any]
+
+    def schema(self):
+        return {"type": "function", "function": {"name": self.name, "description": self.description, "parameters": self.parameters, "strict": True}}
+
+
 class ToolRegistry:
- def __init__(self): self._tools={}
- def register(self,tool):
-  if tool.name in self._tools: raise AgentError("工具重复注册："+tool.name)
-  self._tools[tool.name]=tool
- def get(self,name):
-  if name not in self._tools: raise AgentError("未知工具："+name)
-  return self._tools[name]
- def schemas(self): return [t.schema() for t in self._tools.values()]
- def call(self,name,arguments): return self.get(name).handler(**arguments)
-def create_registry(planner,validator,repository,adapter=None,executor=None,observer=None):
- r=ToolRegistry()
- r.register(Tool("create_task","根据已解析提案展开任务模板",{"type":"object","properties":{"proposal":{"type":"object"}},"required":["proposal"]},lambda proposal: planner.build(proposal)))
- r.register(Tool("validate_task","验证任务 Schema、组件、动作、顺序和约束",{"type":"object","properties":{"task":{"type":"object"}},"required":["task"]},lambda task: validator.validate(task)))
- r.register(Tool("save_task","验证后保存任务文件",{"type":"object","properties":{"task":{"type":"object"}},"required":["task"]},lambda task: repository.save(validator.validate(task)),requires_confirmation=True))
- if adapter:
-  r.register(Tool("export_legacy_task","将已验证任务转换为 Qt/视觉系统 taskList JSON",{"type":"object","properties":{"task":{"type":"object"}},"required":["task"]},lambda task: adapter.convert(validator.validate(task))))
- if adapter and executor:
-  r.register(Tool("execute_task","通过 ROS2 顺序执行已验证的点击任务并等待闭环反馈",{"type":"object","properties":{"task":{"type":"object"}},"required":["task"]},lambda task: executor.execute(adapter.convert(validator.validate(task))),requires_confirmation=True))
- if observer:
-  r.register(Tool("observe_screen","读取当前画面中的组件、像素位置和相机三维点，不触发动作",{"type":"object","properties":{},"required":[]},lambda: observer.observe()))
- return r
+    def __init__(self):
+        self._tools: dict[str, Tool] = {}
+
+    def register(self, tool: Tool) -> None:
+        if tool.name in self._tools:
+            raise AgentError("工具重复注册：" + tool.name)
+        self._tools[tool.name] = tool
+
+    def get(self, name: str) -> Tool:
+        if name not in self._tools:
+            raise AgentError("未知工具：" + name)
+        return self._tools[name]
+
+    def schemas(self) -> list[dict]:
+        return [tool.schema() for tool in self._tools.values()]
+
+    def call(self, name: str, arguments: dict):
+        return self.get(name).handler(**arguments)
+
+
+def register_phase3_tools(*, retriever=None, observer=None, operation_planner=None) -> ToolRegistry:
+    """Create only the tools used by the current knowledge/vision pipeline."""
+    registry = ToolRegistry()
+    if retriever is not None:
+        registry.register(Tool(
+            "search_knowledge", "检索 DHO804 说明书知识摘要",
+            {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer", "minimum": 1, "maximum": 20}}, "required": ["query", "limit"]},
+            lambda query, limit=5: retriever.operation_summaries(query, limit=limit),
+        ))
+        if hasattr(retriever, "observation_plan"):
+            registry.register(Tool(
+                "plan_observation", "把用户目标转换成视觉观察目标",
+                {"type": "object", "properties": {"query": {"type": "string"}, "limit": {"type": "integer", "minimum": 1, "maximum": 20}}, "required": ["query", "limit"]},
+                lambda query, limit=5: retriever.observation_plan(query, limit=limit).model_dump(mode="json"),
+            ))
+    if operation_planner is not None:
+        registry.register(Tool(
+            "plan_operation", "根据用户目标生成分步操作计划，不生成 bbox",
+            {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]},
+            lambda query: operation_planner.plan(query).model_dump(mode="json"),
+        ))
+    if observer is not None:
+        registry.register(Tool(
+            "observe_screen", "读取当前图片的界面状态和目标组件，不触发动作",
+            {"type": "object", "properties": {"image": {"type": "string"}, "query": {"type": "string"}}, "required": ["image", "query"]},
+            lambda image, query: observer.observe(image, query).model_dump(mode="json"),
+        ))
+    return registry

@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_06": {
+      "title": "设置水平系统",
+      "chunks": 4,
+      "records": 12,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_06/knowledge_chapter_06.jsonl"
+    }
+  },
+  "unassigned_chunks": 231,
+  "total_records": 12
+}

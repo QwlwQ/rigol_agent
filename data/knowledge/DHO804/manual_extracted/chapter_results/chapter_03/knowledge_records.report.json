@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_03": {
+      "title": "文档概述",
+      "chunks": 2,
+      "records": 12,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_03/knowledge_chapter_03.jsonl"
+    }
+  },
+  "unassigned_chunks": 233,
+  "total_records": 12
+}

@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_05": {
+      "title": "设置垂直系统",
+      "chunks": 9,
+      "records": 33,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_05/knowledge_chapter_05.jsonl"
+    }
+  },
+  "unassigned_chunks": 226,
+  "total_records": 33
+}

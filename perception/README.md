@@ -1,4 +1,4 @@
-# Phase 1 perception MVP
+# Perception：Phase 1/3 视觉入口
 
 当前入口只读取一张已有的示波器屏幕 ROI 图片，不连接 ROS2 或机械臂：
 
@@ -30,6 +30,16 @@ QWEN_VL_MODEL=...
 - 原图框选输出。
 
 尚未实现：OCR Adapter、说明书辅助模式、参考图片模式、实时图像文件桥接和评估 Ground Truth。
+
+Phase 3 的知识驱动识别入口是：
+
+```bash
+python3 scripts/inspect_agent.py \
+  --image /path/to/screen_roi.jpg \
+  --query "测量 CH2 的峰峰值"
+```
+
+它会先识别界面状态，再定位自然语言目标对应的组件。目标别名和视觉描述位于 `data/knowledge/DHO804/visual_knowledge.yaml`。
 
 ## 使用既有示波器图片做批量测试
 
@@ -82,4 +92,4 @@ python3 scripts/locate_component.py --image test.jpg --target CH2 --state any
 {"target": "CH2", "observed_state": "off"}
 ```
 
-`off/on` 是当前视觉 MVP 的逻辑状态名称，不是 Qwen 自动产生的类别 ID。后续 Planner 应将“点击 CH2”解析为查找 `CH2 + off`，并将点击后的验证目标设为 `CH2 + on`。
+`off/on` 是当前视觉结果的逻辑状态名称，不是 Qwen 自动产生的类别 ID。操作计划会把点击前置条件和点击后的预期状态写入 `OperationStep`。

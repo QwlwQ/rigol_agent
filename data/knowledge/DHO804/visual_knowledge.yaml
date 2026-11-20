@@ -1,0 +1,77 @@
+# Device-specific visual vocabulary for Phase 3.
+# Add or correct aliases and descriptions here before changing Python code.
+version: 1
+prompt_rules:
+  - "只返回目标组件的真实 bbox；无法确认坐标时返回 found=false，不要根据语义猜坐标。"
+  - "坐标对应输入图片，不要使用模型内部缩放后的坐标。"
+screen_states:
+  main_screen:
+    description: "完整波形和通道控制区可见，测量面板尚未展开。"
+  measurement_panel:
+    description: "测量面板已打开，但无法确认当前垂直、水平或其它分类。"
+  measurement_vertical:
+    description: "测量面板打开，垂直分类被选中并显示垂直测量参数。"
+  measurement_horizontal:
+    description: "测量面板打开，水平分类被选中并显示水平测量参数。"
+  measurement_other:
+    description: "测量面板打开，其它分类被选中并显示其它测量参数。"
+  unknown:
+    description: "无法从图片可靠确认界面状态。"
+operations:
+  measurement:
+    note: "每一步点击前重新观察；点击后重新获取图片并验证 expected_changes。"
+  channel_activation:
+    note: "关闭通道仍然存在于底部通道栏；不要因为没有波形而返回 found=false。"
+targets:
+  Measure:
+    aliases: [测量, measurement]
+    visual_description: "主界面右上方、RUN/STOP 附近的测量入口按钮，或测量面板顶部的‘测量’标题。优先寻找屏幕顶部工具栏中的中文‘测量’按钮，不要因为测量面板尚未展开而返回 found=false。"
+    prompt_rules:
+      - "主界面时优先寻找右上角 RUN/STOP 附近的测量按钮；测量面板打开时寻找顶部测量标题。"
+  Vertical:
+    aliases: [垂直, vertical]
+    visual_description: "测量面板中的垂直分类标签，通常位于水平和其它之间；选中时下方有高亮线。"
+  Horizontal:
+    aliases: [水平, horizontal]
+    visual_description: "测量面板中的水平分类标签，通常与垂直、其它并列。"
+  Other:
+    aliases: [其它, 其他, other]
+    visual_description: "测量面板中的其它分类标签，通常与垂直、水平并列。"
+  Maximum:
+    aliases: [最大值, maximum]
+    visual_description: "垂直测量参数第一行最左侧的最大值项目，通常显示中文‘最大值’。"
+  Minimum:
+    aliases: [最小值, minimum]
+    visual_description: "垂直测量参数第一行从左数第二个的最小值项目，通常显示中文‘最小值’。"
+  Amplitude:
+    aliases: [幅度值, amplitude]
+    visual_description: "垂直测量参数第一行最右侧的幅度值项目，寻找中文‘幅度值’及其图标；不要把第一行中间的最大值、最小值、峰峰值、顶端值或底端值当作幅度值。"
+  Peak-to-Peak:
+    aliases: [峰峰值, 峰-峰值, peak-to-peak, p-p]
+    visual_description: "垂直测量参数第一行从左数第三个的峰峰值项目，优先寻找中文‘峰峰值’；不要把最右侧的‘幅度值’或其它相似项目当作峰峰值。"
+  Frequency:
+    aliases: [频率, frequency]
+    visual_description: "水平测量参数中的频率项目，寻找中文‘频率’标签。"
+  Period:
+    aliases: [周期, period]
+    visual_description: "水平测量参数中的周期项目，寻找中文‘周期’标签。"
+  Delay(r-f):
+    aliases: [延迟(r-f), delay(r-f)]
+    visual_description: "其它测量参数中的延迟(r-f)项目，寻找上升沿到下降沿对应的中文标签。"
+channels:
+  CH1:
+    aliases: [通道1, 第一通道, channel1]
+    visual_description: "底部通道控制栏中编号 1 的模拟通道卡片。"
+  CH2:
+    aliases: [通道2, 第二通道, channel2]
+    visual_description: "底部通道控制栏中编号 2 的模拟通道卡片。即使通道关闭或没有波形，也要定位该卡片；关闭状态通常颜色较暗。"
+    state_rules:
+      any: "状态不限，找到后报告 observed_state。"
+      on: "要求卡片高亮或已激活。"
+      off: "要求卡片未高亮或关闭，但仍然要返回卡片 bbox。"
+  CH3:
+    aliases: [通道3, 第三通道, channel3]
+    visual_description: "底部通道控制栏中编号 3 的模拟通道卡片。"
+  CH4:
+    aliases: [通道4, 第四通道, channel4]
+    visual_description: "底部通道控制栏中编号 4 的模拟通道卡片。"

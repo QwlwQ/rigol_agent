@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_18": {
+      "title": "搜索与导航功能",
+      "chunks": 6,
+      "records": 35,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_18/knowledge_chapter_18.jsonl"
+    }
+  },
+  "unassigned_chunks": 229,
+  "total_records": 35
+}

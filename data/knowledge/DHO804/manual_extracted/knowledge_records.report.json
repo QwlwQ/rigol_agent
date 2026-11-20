@@ -1,0 +1,15 @@
+{
+  "input": "data/index/DHO804/source_chunks.jsonl",
+  "processed": 235,
+  "records": 2620,
+  "errors": [
+    {
+      "chunk_id": "source_00095",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 208 (char 207)"
+    },
+    {
+      "chunk_id": "source_00158",
+      "error": "Expecting ':' delimiter: line 1 column 9230 (char 9229)"
+    }
+  ]
+}

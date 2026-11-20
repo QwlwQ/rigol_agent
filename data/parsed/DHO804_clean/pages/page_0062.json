@@ -207,7 +207,8 @@
           364.21539306640625
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0062_image_002.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0062_image_001.jpeg",
@@ -224,7 +225,8 @@
           175.3067626953125
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0062_image_001.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0062_image_004.jpeg",
@@ -260,7 +262,8 @@
           515.3714599609375
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0062_image_003.jpeg"
       }
     ]
   }

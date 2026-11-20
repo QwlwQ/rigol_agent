@@ -354,7 +354,8 @@
           611.5078125
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0197_image_003.jpeg"
       }
     ]
   }

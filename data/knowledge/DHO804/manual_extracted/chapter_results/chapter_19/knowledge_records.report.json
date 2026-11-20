@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_19": {
+      "title": "显示控制",
+      "chunks": 43,
+      "records": 170,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_19/knowledge_chapter_19.jsonl"
+    }
+  },
+  "unassigned_chunks": 192,
+  "total_records": 170
+}

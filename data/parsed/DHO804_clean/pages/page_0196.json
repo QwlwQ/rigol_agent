@@ -301,7 +301,8 @@
           325.7862548828125
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0196_image_001.jpeg"
       }
     ]
   }

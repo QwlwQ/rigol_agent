@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_12": {
+      "title": "直方图分析",
+      "chunks": 5,
+      "records": 17,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_12/knowledge_chapter_12.jsonl"
+    }
+  },
+  "unassigned_chunks": 230,
+  "total_records": 17
+}

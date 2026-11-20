@@ -413,7 +413,8 @@
           430.62127685546875
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0061_image_003.png"
       }
     ]
   }

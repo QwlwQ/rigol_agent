@@ -289,7 +289,8 @@
           250.03619384765625
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0136_image_002.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0136_image_006.jpeg",

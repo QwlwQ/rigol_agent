@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_16": {
+      "title": "多窗口显示",
+      "chunks": 2,
+      "records": 8,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_16/knowledge_chapter_16.jsonl"
+    }
+  },
+  "unassigned_chunks": 233,
+  "total_records": 8
+}

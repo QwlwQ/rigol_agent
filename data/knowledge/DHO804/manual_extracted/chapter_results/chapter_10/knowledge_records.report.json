@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_10": {
+      "title": "测量",
+      "chunks": 21,
+      "records": 98,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_10/knowledge_chapter_10.jsonl"
+    }
+  },
+  "unassigned_chunks": 214,
+  "total_records": 98
+}

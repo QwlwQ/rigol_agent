@@ -268,7 +268,8 @@
           325.33758544921875
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0204_image_001.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0204_image_002.jpeg",

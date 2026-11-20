@@ -3,6 +3,14 @@ class VisionModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 class BoundingBox(VisionModel):
     x_min: float = Field(ge=0); y_min: float = Field(ge=0); x_max: float = Field(ge=0); y_max: float = Field(ge=0)
+    @model_validator(mode="before")
+    @classmethod
+    def accept_sequence(cls, value):
+        if isinstance(value, (list, tuple)):
+            if len(value) != 4:
+                raise ValueError("bbox 必须包含四个坐标")
+            return {"x_min": value[0], "y_min": value[1], "x_max": value[2], "y_max": value[3]}
+        return value
     @model_validator(mode="after")
     def ordered(self):
         if self.x_max <= self.x_min or self.y_max <= self.y_min: raise ValueError("bbox 坐标顺序无效")
@@ -14,6 +22,8 @@ class LocateResult(VisionModel):
     @model_validator(mode="after")
     def validate_result(self):
         width,height=self.image_size
+        if width <= 0 or height <= 0:
+            raise ValueError("image_size 必须为正数")
         for candidate in self.candidates:
             box=candidate.bbox
             if box.x_max > width or box.y_max > height: raise ValueError("bbox 超出原始图片范围")

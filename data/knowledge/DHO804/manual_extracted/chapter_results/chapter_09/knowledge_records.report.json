@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_09": {
+      "title": "数学运算",
+      "chunks": 18,
+      "records": 79,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_09/knowledge_chapter_09.jsonl"
+    }
+  },
+  "unassigned_chunks": 217,
+  "total_records": 79
+}

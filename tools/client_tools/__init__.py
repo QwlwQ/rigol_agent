@@ -1,1 +1,0 @@
-"""Client tool extension package."""

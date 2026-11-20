@@ -10,6 +10,60 @@ parse_scope:
   exclude_patterns: []
   page_ranges: []
 
+normalize_scope:
+  chapters:
+    - id: chapter_03
+      title: 文档概述
+      page_ranges: [[22, 23]]
+    - id: chapter_04
+      title: 快速入门
+      page_ranges: [[24, 45]]
+    - id: chapter_05
+      title: 设置垂直系统
+      page_ranges: [[46, 54]]
+    - id: chapter_06
+      title: 设置水平系统
+      page_ranges: [[55, 58]]
+    - id: chapter_07
+      title: 设置采样系统
+      page_ranges: [[59, 66]]
+    - id: chapter_08
+      title: 触发示波器
+      page_ranges: [[67, 106]]
+    - id: chapter_09
+      title: 数学运算
+      page_ranges: [[107, 124]]
+    - id: chapter_10
+      title: 测量
+      page_ranges: [[125, 145]]
+    - id: chapter_11
+      title: 数字电压表和频率计
+      page_ranges: [[146, 150]]
+    - id: chapter_12
+      title: 直方图分析
+      page_ranges: [[151, 155]]
+    - id: chapter_13
+      title: 参考波形
+      page_ranges: [[156, 157]]
+    - id: chapter_14
+      title: 通过/失败测试
+      page_ranges: [[158, 161]]
+    - id: chapter_15
+      title: 协议解码
+      page_ranges: [[162, 179]]
+    - id: chapter_16
+      title: 多窗口显示
+      page_ranges: [[180, 181]]
+    - id: chapter_17
+      title: 波形录制与播放
+      page_ranges: [[182, 185]]
+    - id: chapter_18
+      title: 搜索与导航功能
+      page_ranges: [[186, 191]]
+    - id: chapter_19
+      title: 显示控制
+      page_ranges: [[192, 234]]
+
 retrieval_scope:
   chapters: []
   include_patterns: []

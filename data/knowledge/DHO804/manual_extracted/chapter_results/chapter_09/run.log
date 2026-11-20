@@ -1,0 +1,9 @@
+chapter_09: 5/18 records=17
+chapter_09: 10/18 records=25
+chapter_09: 15/18 records=20
+chapter_09: 18/18 records=17
+{
+  "output": "data/knowledge/DHO804/chapter_results/chapter_09/knowledge_records.jsonl",
+  "records": 79,
+  "unassigned_chunks": 217
+}

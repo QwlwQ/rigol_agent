@@ -1,10 +1,10 @@
 """Provider boundary: standard HTTP only; no provider SDK leaks."""
-import json
 import os
 import time
 import httpx
 from pydantic import ValidationError
-from models.planning import AgentError, Proposal
+from models.errors import AgentError
+from models.operation import OperationPlan
 
 class LLMClient:
     def __init__(self, *, model=None, base_url=None, api_key=None, timeout=30,
@@ -20,14 +20,22 @@ class LLMClient:
         self.client = httpx.Client(base_url=(base_url or os.getenv("RIGOL_BASE_URL", "https://api.openai.com/v1")).rstrip("/")+"/",
             headers={"Authorization": "Bearer "+key}, timeout=timeout, transport=transport)
 
-    def propose(self, messages):
-        fmt = {"type": self.format}
-        if self.format == "json_schema":
-            fmt["json_schema"] = {"name": "task_proposal", "schema": Proposal.model_json_schema(), "strict": False}
+    def plan_operation(self, messages):
+        """Ask the text model for a compact operation plan.
+
+        The planner receives summaries and state expectations only.  Images and
+        click coordinates remain in the VLM/observation layer.
+        """
+        fmt = {"type": "json_schema", "json_schema": {
+            "name": "operation_plan",
+            "schema": OperationPlan.model_json_schema(),
+            "strict": False,
+        }}
         for attempt in range(self.retries + 1):
             try:
-                response = self.client.post("chat/completions", json={"model": self.model,
-                    "messages": messages, "response_format": fmt})
+                response = self.client.post("chat/completions", json={
+                    "model": self.model, "messages": messages, "response_format": fmt,
+                })
                 if response.status_code == 429 or response.status_code >= 500:
                     if attempt < self.retries:
                         time.sleep(min(2 ** attempt, 4))
@@ -39,7 +47,7 @@ class LLMClient:
                 message = choice["message"]
                 if message.get("refusal"):
                     raise AgentError("模型拒绝了该请求。")
-                return Proposal.model_validate_json(message["content"])
+                return OperationPlan.model_validate_json(message["content"])
             except httpx.TransportError:
                 if attempt < self.retries:
                     time.sleep(min(2 ** attempt, 4))
@@ -50,7 +58,7 @@ class LLMClient:
             except (KeyError, IndexError, TypeError, ValueError, ValidationError) as exc:
                 if isinstance(exc, AgentError):
                     raise
-                raise AgentError("模型返回了无效结构；未创建任务。") from None
+                raise AgentError("模型返回了无效的操作计划；未执行任务。") from None
         raise AgentError("模型重试次数已耗尽。")
 
     def close(self):

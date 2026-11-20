@@ -14,4 +14,4 @@ class ComponentLocator:
         merged_context = f"逻辑目标：{target}\n期望状态：{state}\n逻辑目标的设备视觉描述：{visual_description}"
         if context:
             merged_context += "\n补充上下文：" + context
-        return self.client.locate(image_path, target, context=merged_context)
+        return self.client.locate(image_path, target, state=state, context=merged_context)

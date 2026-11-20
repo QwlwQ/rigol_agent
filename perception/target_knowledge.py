@@ -1,16 +1,29 @@
 from pathlib import Path
 import yaml
+from knowledge.visual_knowledge import load_visual_knowledge
 
 class TargetKnowledge:
     def __init__(self, path=None, components_path=None):
         root = Path(__file__).resolve().parents[1]
-        path = Path(path) if path else root / "data" / "knowledge" / "DHO804" / "visual_targets.yaml"
+        path = Path(path) if path else root / "data" / "knowledge" / "DHO804" / "visual_knowledge.yaml"
         components_path = Path(components_path) if components_path else root / "data" / "knowledge" / "DHO804" / "components.yaml"
-        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        components_data = yaml.safe_load(components_path.read_text(encoding="utf-8")) or {}
+        # Phase 2 deliberately removed the old fixed component YAML files.
+        # Keep this adapter optional so the manual JSONL remains the source of
+        # truth and the Phase 1 locator can still be used with arbitrary text.
+        data = load_visual_knowledge(path) if path.is_file() else {}
+        components_data = yaml.safe_load(components_path.read_text(encoding="utf-8")) if components_path.is_file() else {}
+        data = data or {}
+        components_data = components_data or {}
         self.targets = data.get("targets", {})
+        self.channels = data.get("channels", {})
+        self.global_prompt_rules = data.get("prompt_rules", [])
+        self.screen_states = data.get("screen_states", {})
+        self.operation_hints = data.get("operations", {})
         self.components = {item["name"]: item for item in components_data.get("components", [])}
         self.aliases = {}
+        for name, item in {**self.targets, **self.channels}.items():
+            for alias in [name, *item.get("aliases", [])]:
+                self.aliases[str(alias).casefold()] = name
         for name, component in self.components.items():
             for alias in [name, *component.get("aliases", [])]:
                 self.aliases[str(alias).casefold()] = name
@@ -20,13 +33,18 @@ class TargetKnowledge:
 
     def describe(self, target: str, state: str = "any") -> str:
         target = self.resolve(target)
-        item = self.targets.get(target)
+        item = self.targets.get(target) or self.channels.get(target)
         if item and item.get("visual_description"):
             description = item["visual_description"]
-            if state == "on":
-                description += "\n要求目标处于 on/selected 状态：卡片应有明显高亮边框或激活颜色，且主显示区域应出现对应通道标记/波形。"
-            elif state == "off":
-                description += "\n要求目标处于 off/unselected 状态：卡片应为暗色或未高亮，不要返回已经高亮的同名通道卡片。"
+            state_rules = item.get("state_rules", {})
+            if state in state_rules:
+                description += "\n" + str(state_rules[state])
+            elif state in {"on", "off"}:
+                description += f"\n要求目标处于 {state} 状态，并报告 observed_state。"
+            for rule in item.get("prompt_rules", []):
+                description += "\n" + str(rule)
+            for rule in self.global_prompt_rules:
+                description += "\n" + str(rule)
             return description
         component = self.components.get(target)
         if not component:
@@ -63,3 +81,16 @@ class TargetKnowledge:
             return (f"Locate the {target} menu or control in the DHO804 interface. "
                     f"It may use a localized label; aliases include {aliases}.")
         return f"Locate the logical component {target}. Visible aliases include {aliases}. Do not invent coordinates."
+
+    def screen_prompt(self) -> str:
+        """Return YAML-defined screen-state guidance for the VLM prompt."""
+        lines = []
+        for name, item in self.screen_states.items():
+            if isinstance(item, dict):
+                description = item.get("description", "")
+                if description:
+                    lines.append(f"{name}: {description}")
+            elif item:
+                lines.append(f"{name}: {item}")
+        lines.extend(str(rule) for rule in self.global_prompt_rules)
+        return "\n".join(lines)

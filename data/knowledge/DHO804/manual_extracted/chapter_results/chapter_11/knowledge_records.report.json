@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_11": {
+      "title": "数字电压表和频率计",
+      "chunks": 5,
+      "records": 22,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_11/knowledge_chapter_11.jsonl"
+    }
+  },
+  "unassigned_chunks": 230,
+  "total_records": 22
+}

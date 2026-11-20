@@ -1,0 +1,6 @@
+chapter_12: 5/5 records=17
+{
+  "output": "data/knowledge/DHO804/chapter_results/chapter_12/knowledge_records.jsonl",
+  "records": 17,
+  "unassigned_chunks": 230
+}

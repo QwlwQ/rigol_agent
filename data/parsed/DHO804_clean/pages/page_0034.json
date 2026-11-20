@@ -418,7 +418,8 @@
           91.49685668945312
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_001.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_007.jpeg",
@@ -454,7 +455,8 @@
           551.1033325195312
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_008.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_004.jpeg",
@@ -471,7 +473,8 @@
           417.88238525390625
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_004.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_006.png",
@@ -584,7 +587,8 @@
           551.1033325195312
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_009.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_010.jpeg",
@@ -601,7 +605,8 @@
           551.1033325195312
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_010.jpeg"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_002.png",
@@ -618,7 +623,8 @@
           338.66839599609375
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_002.png"
       },
       {
         "path": "data/parsed/DHO804/images/page_0034_image_003.jpeg",
@@ -635,7 +641,8 @@
           372.72540283203125
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0034_image_003.jpeg"
       }
     ]
   }

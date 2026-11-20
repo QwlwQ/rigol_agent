@@ -8,9 +8,37 @@ from pathlib import Path
 import httpx
 from PIL import Image
 from models.perception import LocateResult
+from models.observation import ScreenRecognition
 
 class VisionClientError(RuntimeError):
     pass
+
+
+def _load_project_env() -> None:
+    """Load a local .env when python-dotenv is not installed.
+
+    The project lists python-dotenv as a dependency, but the current runtime
+    may execute directly from the system interpreter.  Values already present
+    in the process always win.
+    """
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        return
+    except ImportError:
+        pass
+    env_path = Path(__file__).resolve().parents[1] / ".env"
+    if not env_path.is_file():
+        return
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key and key not in os.environ:
+            os.environ[key] = value
 
 def _content_text(content):
     if isinstance(content, str):
@@ -84,10 +112,18 @@ def _normalize_payload(raw, target, width, height):
             "observed_state": candidate.get("observed_state", candidate.get("state")),
         })
     found = bool(raw.get("found", bool(normalized)))
-    return {"found": found, "target": raw.get("target", target), "image_size": [width, height], "candidates": normalized, "reason": raw.get("reason")}
+    reason = raw.get("reason")
+    # A model may say found=true while refusing to provide a trustworthy box.
+    # The schema must represent the actionable truth: no bbox means not found
+    # for the purpose of a click.
+    if found and not normalized:
+        found = False
+        reason = reason or "模型确认目标存在，但未提供可执行的 bbox"
+    return {"found": found, "target": raw.get("target", target), "image_size": [width, height], "candidates": normalized, "reason": reason}
 
 class Qwen3VLClient:
     def __init__(self, *, api_key=None, base_url=None, model=None, timeout=60, transport=None):
+        _load_project_env()
         self.api_key = api_key or os.getenv("QWEN_VL_API_KEY")
         self.base_url = (base_url or os.getenv("QWEN_VL_BASE_URL", "")).rstrip("/") + "/"
         self.model = model or os.getenv("QWEN_VL_MODEL")
@@ -130,6 +166,7 @@ class Qwen3VLClient:
             if reported_width > 0 and reported_height > 0:
                 scale_x = actual_width / reported_width
                 scale_y = actual_height / reported_height
+                coordinate_mode = os.getenv("QWEN_VL_COORDINATE_MODE", "auto").casefold()
                 boxes = [c["bbox"] for c in raw.get("candidates", [])]
                 values = [float(box[key]) for box in boxes for key in ("x_min", "y_min", "x_max", "y_max")]
                 # Qwen vision responses sometimes use the common 0-1000
@@ -138,8 +175,19 @@ class Qwen3VLClient:
                     box.get("x_max", 0) > reported_width or box.get("y_max", 0) > reported_height
                     for box in boxes
                 )
-                if (values and max(values) <= 1000 and
-                    (exceeds_reported or (reported_width == actual_width and reported_height == actual_height))):
+                if values and max(values) <= 1 and reported_width > 1 and reported_height > 1:
+                    # Some gateways return 0..1 normalized boxes while still
+                    # echoing the pixel image size.
+                    scale_x, scale_y = actual_width, actual_height
+                elif coordinate_mode in {"pixel", "pixels"}:
+                    # Explicit override for a provider that obeys the pixel
+                    # coordinate instruction.
+                    scale_x, scale_y = actual_width / reported_width, actual_height / reported_height
+                elif coordinate_mode in {"normalized", "normalized_1000", "1000"} or (
+                    coordinate_mode == "auto" and values and max(values) <= 1000 and reported_width == actual_width and reported_height == actual_height
+                ) or (values and max(values) <= 1000 and exceeds_reported):
+                    # Qwen-compatible gateways commonly return 0..1000 boxes
+                    # even when they echo the original pixel image_size.
                     scale_x, scale_y = actual_width / 1000, actual_height / 1000
                 for candidate in raw.get("candidates", []):
                     box = candidate.get("bbox", {})
@@ -160,7 +208,40 @@ class Qwen3VLClient:
                 diagnostic = "；归一化后的候选框=" + json.dumps(raw.get("candidates", []), ensure_ascii=False)
             elif "没有 JSON" in detail and isinstance(locals().get("content"), str):
                 diagnostic = "；模型文本摘要=" + content[:500].replace("\n", " ")
+            elif isinstance(locals().get("raw"), dict):
+                diagnostic = "；模型 JSON 摘要=" + json.dumps(raw, ensure_ascii=False)[:1200]
             raise VisionClientError(f"Qwen3-VL 返回结果无法解析：{detail}{diagnostic}") from None
+
+    def recognize_screen(self, image_path: str | Path, *, context: str = "") -> ScreenRecognition:
+        """Classify the current UI without requiring a target component."""
+        path = Path(image_path)
+        if not path.is_file():
+            raise VisionClientError(f"图片不存在：{path}")
+        with Image.open(path) as image:
+            width, height = image.size
+        instruction = f'''你是 Rigol DHO804 示波器界面状态识别器。请判断输入图片当前最符合的界面状态。
+可选状态只能是：main_screen、measurement_panel、measurement_vertical、measurement_horizontal、measurement_other、unknown。
+判断依据包括测量面板、垂直/水平/其它分类标签、结果窗口和明显的主界面布局。若测量面板打开且能看到当前选中的垂直标签及其参数网格，优先返回 measurement_vertical；水平和其它同理。只有测量面板打开但无法确认具体分类时才返回 measurement_panel。无法确认时返回 unknown，不要猜测。{context}
+只返回 JSON，不要 Markdown：
+{{"screen_state":"unknown","confidence":0.0,"evidence":[],"visible_components":[],"reason":null}}
+图片原始尺寸为 [{width}, {height}]。'''
+        payload = {"model": self.model, "messages": [{"role": "user", "content": [
+            {"type": "image_url", "image_url": {"url": self.data_url(path)}},
+            {"type": "text", "text": instruction},
+        ]}], "response_format": {"type": "json_object"}}
+        try:
+            response = self.http.post("chat/completions", json=payload)
+            response.raise_for_status()
+            body = response.json()
+            content = _content_text(body["choices"][0]["message"].get("content"))
+            raw = _json_payload(content)
+            if not isinstance(raw, dict):
+                raise ValueError("界面状态响应不是 JSON 对象")
+            return ScreenRecognition.model_validate(raw)
+        except httpx.HTTPError as exc:
+            raise VisionClientError(f"Qwen3-VL 界面识别请求失败：{exc}") from None
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise VisionClientError(f"Qwen3-VL 界面识别结果无法解析：{exc}") from None
 
     def close(self):
         self.http.close()

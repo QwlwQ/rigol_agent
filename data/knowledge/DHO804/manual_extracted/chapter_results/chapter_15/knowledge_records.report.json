@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_15": {
+      "title": "协议解码",
+      "chunks": 18,
+      "records": 101,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_15/knowledge_chapter_15.jsonl"
+    }
+  },
+  "unassigned_chunks": 217,
+  "total_records": 101
+}

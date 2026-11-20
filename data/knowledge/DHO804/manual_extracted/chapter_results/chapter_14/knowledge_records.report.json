@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_14": {
+      "title": "通过/失败测试",
+      "chunks": 4,
+      "records": 28,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_14/knowledge_chapter_14.jsonl"
+    }
+  },
+  "unassigned_chunks": 231,
+  "total_records": 28
+}

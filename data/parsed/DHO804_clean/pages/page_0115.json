@@ -215,7 +215,8 @@
           693.4963989257812
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0115_image_003.png"
       },
       {
         "path": "data/parsed/DHO804/images/page_0115_image_002.jpeg",
@@ -271,7 +272,8 @@
           297.2576904296875
         ],
         "status": "selected",
-        "reason": []
+        "reason": [],
+        "selected_path": "data/parsed/DHO804_clean/images_selected/page_0115_image_001.jpeg"
       }
     ]
   }

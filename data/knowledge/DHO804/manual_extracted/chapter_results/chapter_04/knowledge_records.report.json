@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_04": {
+      "title": "快速入门",
+      "chunks": 22,
+      "records": 139,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_04/knowledge_chapter_04.jsonl"
+    }
+  },
+  "unassigned_chunks": 213,
+  "total_records": 139
+}

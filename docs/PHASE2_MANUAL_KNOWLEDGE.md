@@ -1,380 +1,171 @@
-# Phase 2：DHO804 说明书解析与知识块准备
+# Phase 2：DHO804 说明书解析与知识提取
 
-Phase 2 当前只完成到 LLM 结构化知识提取之前。
+## 1. 当前目标
 
-当前目标是：
+Phase 2 当前目标是：
 
-```text
+~~~text
 DHO804 PDF
-  → PyMuPDF 原始页面证据
-  → Docling 文档结构
-  → 分别清洗
-  → 页面级融合
-  → 人工 Markdown 预览
-  → 生成完整知识块
-```
+  → PyMuPDF/Docling 解析
+  → 页面和图片证据保留
+  → source_chunks.jsonl
+  → DeepSeek 知识提取
+  → knowledge_records.jsonl
+  → 基础知识检索
+~~~
 
 当前不执行：
 
-- LLM 结构化知识提取；
-- 自动写入正式组件、操作或状态知识；
+- DeepSeek 文档结构归一化；
+- ROS2、Qt 和机械臂执行；
+- Qwen3-VL 状态闭环；
+- 正式知识审核工作流。
 
-文档中的 Shell 多行命令使用单个反斜杠作为续行符：
+文档结构归一化曾经测试过，但结果对当前 PDF 改善不明显，并且部分标题和内容出现错乱，因此暂时停用。原始 Docling JSON 保留，不再使用归一化结果作为 Phase 2 主流程。
 
-```bash
-python3 scripts/parse_manual.py \
-  --pdf data/manuals/DHO804/DHO804.pdf \
-  --output data/parsed/DHO804
-```
+## 2. 输入和依赖
 
-反斜杠必须是每一行最后一个字符，不能写成 `\\`。
-- ROS2、Qt 或机械臂操作。
+PDF：
 
-## 1. 原始 PDF
-
-文件位置：
-
-```text
+~~~text
 data/manuals/DHO804/DHO804.pdf
-```
+~~~
 
-原始 PDF 不修改。解析和清洗结果放在 `data/parsed/DHO804/` 及其派生目录。
+依赖：
 
-## 2. 解析工具职责
+~~~text
+Docling 2.150.1
+PyMuPDF 1.28.2
+~~~
 
-当前 Docling 解析入口已显式开启：
+## 3. 原始解析和 PyMuPDF 预处理
 
-- `heading_hierarchy_options`：使用书签、章节编号和字体样式推断标题层级；
-- `generate_picture_images`：导出图片元素；
-- `generate_page_images`：保留页面渲染图；
-- `use_embedded_picture_images`：适用时使用 PDF 内嵌图片；
-- `do_table_structure`：解析表格结构。
+解析：
 
-当前 Docling 版本中标题层级推断默认关闭，因此不能直接信任原始 `level=1`；重新解析时应使用当前入口配置，再结合 `clean_docling.py` 的归一化结果。
+~~~bash
+python3 scripts/parse_manual.py --pdf data/manuals/DHO804/DHO804.pdf --config config/manual.yaml --output data/parsed/DHO804 --docling
+~~~
 
-当前解析入口还会：
+预处理：
 
-- 使用 `ImageRefMode.REFERENCED` 导出 Markdown 图片引用；
-- 将 Docling 图片保存到 `data/parsed/DHO804/docling_images/`；
-- 保留原始 Docling JSON，不覆盖原始解析结果。
+~~~bash
+python3 scripts/clean_manual.py --input data/parsed/DHO804 --output data/parsed/DHO804_clean --copy-selected-images
+~~~
 
-### PyMuPDF
+PyMuPDF 结果保存页面、文本块、图片、bbox、哈希和来源。原始解析目录不覆盖。
 
-负责底层页面证据：
+## 4. 生成 source chunks
 
-- 页码；
-- 页面文本；
-- 文本块和坐标；
-- 嵌入图片；
-- 图片页面 bbox；
-- 原始页面来源。
+当前 source chunks 位于：
 
-### Docling
+~~~text
+data/index/DHO804/source_chunks.jsonl
+~~~
 
-负责文档结构：
+每行一个 JSON chunk，保留文本、页面、source_refs、表格、图片引用和 verification_status。
 
-- 标题和章节层级；
-- 正文元素；
-- 表格；
-- 图片元素；
-- 元素 provenance；
-- Docling JSON。
+## 5. DeepSeek 知识提取
 
-两者不是二选一：PyMuPDF 保存页面级证据，Docling 提供结构，之后通过 `fuse_manual.py` 合并。
+知识提取脚本：
 
-## 3. 解析命令
+~~~text
+scripts/extract_knowledge.py
+~~~
 
-安装 Phase 2 依赖：
+脚本按 config/manual.yaml 的章节范围分组，每章单独提取，结果保存在：
 
-```bash
-source .venv/bin/activate
-pip install -r requirements-phase2.txt
-```
+~~~text
+data/knowledge/DHO804/manual_extracted/chapter_results/
+~~~
 
-解析 PDF：
+DeepSeek 配置：
 
-```bash
-python3 scripts/parse_manual.py \
-  --pdf data/manuals/DHO804/DHO804.pdf \
-  --config config/manual.yaml \
-  --output data/parsed/DHO804
-```
+~~~env
+RIGOL_API_KEY=新的DeepSeek_API_Key
+RIGOL_MODEL=deepseek-flash
+RIGOL_BASE_URL=https://api.deepseek.com
+~~~
 
-如果还没有 Docling JSON，则运行：
+知识提取命令：
 
-```bash
-python3 scripts/parse_manual.py \
-  --pdf data/manuals/DHO804/DHO804.pdf \
-  --config config/manual.yaml \
-  --output data/parsed/DHO804 \
-  --docling
-```
+~~~bash
+python3 scripts/extract_knowledge.py --input data/index/DHO804/source_chunks.jsonl --config config/manual.yaml --output-dir data/knowledge/DHO804/manual_extracted --chunks-per-request 5
+~~~
 
-原始解析输出：
+输出记录包含 record_type、id、name、description、data、chapter_id、chapter_title、source_refs、pages、confidence 和 verification_status。
 
-```text
-data/parsed/DHO804/
-├── pages/
-├── text/
-├── images/
-├── pymupdf_summary.json
-├── docling_document.json
-└── document.md
-```
+## 6. 来源补全
 
-`document.md` 只用于初步人工浏览，不是最终知识输入。
+说明书提取结果通过 source_refs 关联回原始 Docling JSON：
 
-重新解析 Docling 后应检查：
+~~~bash
+python3 scripts/enrich_knowledge_records.py --input-dir data/knowledge/DHO804/manual_extracted/chapter_results --pattern 'chapter_*/knowledge_records.jsonl' --docling data/parsed/DHO804/docling_document.json --output data/knowledge/DHO804/manual_extracted/knowledge_records.jsonl
+~~~
 
-```text
-data/parsed/DHO804/docling_document.json
-data/parsed/DHO804/document.md
-data/parsed/DHO804/docling_images/
-```
+最终知识文件：
 
-重点检查标题 `level` 是否出现 1、2、3 等层级，Markdown 是否包含图片引用，以及图片文件是否实际生成。
+~~~text
+data/knowledge/DHO804/manual_extracted/knowledge_records.jsonl
+~~~
 
-## Docling 是否需要 GPU
+记录会补充 source_elements、source_pages、source_text、source_tables、source_images 和 page_context_images。
 
-GPU 不是 Docling 的必需条件。CPU 可以完成 PDF 解析，但 DHO804 这类 234 页、图片和表格较多的说明书，Docling 运行较慢是正常现象。
+Phase 2 不设置 verified 中间层，当前直接使用 manual_extracted/knowledge_records.jsonl。
 
-当前配置中：
+## 7. 基础知识检索
 
-```text
-do_ocr=False
-do_table_structure=True
-generate_page_images=True
-generate_picture_images=True
-```
+~~~bash
+python3 scripts/search_knowledge.py "测量 峰峰值" --type operation --limit 5
+~~~
 
-主要耗时来源包括页面布局分析、表格结构识别、图片/页面渲染、图片写入以及模型首次下载和加载。
+检索代码：
 
-先检查当前虚拟环境是否有可用 CUDA：
+~~~text
+knowledge/manual_repository.py
+knowledge/retrieval/knowledge_retriever.py
+~~~
 
-```bash
-python3 -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
-```
+当前是关键词检索，后续再根据需要增加语义检索和操作 Schema 约束。
 
-判断原则：
+## 8. 当前 Phase 2 状态
 
-```text
-CUDA 不可用
-  → 使用 CPU，功能不受影响，只是更慢
+已完成：
 
-CUDA 可用且需要反复解析
-  → 建议配置 GPU
+- PDF 解析；
+- PyMuPDF 页面和图片证据；
+- Docling 原始结构；
+- source chunks；
+- 按章节 DeepSeek 知识提取；
+- 说明书知识记录；
+- 来源文本、表格、页码和图片上下文补全；
+- 基础知识检索。
 
-只解析一次且 PDF 为数字文本
-  → 可以先用 CPU 完成
-```
+暂缓：
 
-当前 DHO804 PDF 是数字说明书，已经关闭 OCR，因此不需要为了 OCR 单独配置 GPU。GPU 配置仍应根据当前 Docling 版本的 `accelerator_options` 确认，不能直接套用其他版本参数。
+- DeepSeek Docling 结构归一化；
+- Fuse；
+- 复杂知识审核；
+- 向量检索。
 
-## 4. 清洗
+## 9. Phase 3 入口
 
-### 4.1 清洗 PyMuPDF 结果
+Phase 3 的正式文档见：[PHASE3_KNOWLEDGE_PERCEPTION.md](PHASE3_KNOWLEDGE_PERCEPTION.md)。
 
-```bash
-python3 scripts/clean_manual.py \
-  --input data/parsed/DHO804 \
-  --output data/parsed/DHO804_clean \
-  --copy-selected-images
-```
+Phase 3 将读取：
 
-清洗结果保留页面关系：
+~~~text
+data/knowledge/DHO804/manual_extracted/knowledge_records.jsonl
+~~~
 
-```text
-data/parsed/DHO804_clean/
-├── pages/
-├── text/
-├── images_selected/
-├── image_manifest.jsonl
-└── cleaning_summary.json
-```
+流程：
 
-图片过滤只标记或复制筛选结果，不修改原始图片。过滤依据包括：尺寸、面积、长宽比和重复哈希。小图标、横线、语言标志和重复模板图片通常会被标记为 `likely_decoration`。
+~~~text
+用户自然语言
+  → Knowledge Retriever
+  → 找到 operation/function/state/component
+  → 生成 required_observations
+  → Qwen3-VL 定位组件和状态
+  → 判断界面是否满足前置条件
+~~~
 
-### 4.2 清洗 Docling 结果
-
-```bash
-python3 scripts/clean_docling.py \
-  --input data/parsed/DHO804/docling_document.json \
-  --output data/parsed/DHO804_clean/docling_document_clean.json
-```
-
-该步骤保留 Docling JSON 的结构，并标记高频重复模板文本。Docling 的表格不会在此阶段删除。
-
-清洗阶段不会直接信任 Docling 原始的 `level`。当前 PDF 中候选标题的原始 level 可能全部为 `1`，并且部分“警告”“注意”、项目符号句子或表格标题会被标成 `section_header`。
-
-因此 `clean_docling.py` 会增加：
-
-```text
-normalized_role
-normalized_level
-normalization_reason
-```
-
-归一化规则优先使用章节编号：
-
-```text
-1          → level 1
-1.1        → level 2
-4.3.1      → level 3
-```
-
-同时排除明显的提示语、项目符号和句子型文本。原始 `label`、`level` 和文本仍然保留，归一化结果只作为 Fuse 和章节路径生成的输入。
-
-## 5. 人工预览
-
-在融合前查看 Docling 清洗结果：
-
-```bash
-python3 scripts/export_manual_preview.py \
-  --input data/parsed/DHO804_clean/docling_document_clean.json \
-  --output data/parsed/DHO804_clean/docling_clean_preview.md \
-  --format docling
-```
-
-融合后再次查看页面级结果：
-
-```bash
-python3 scripts/export_manual_preview.py \
-  --input data/parsed/DHO804_fused/fused_document.json \
-  --output data/parsed/DHO804_fused/fused_preview.md \
-  --format fused
-```
-
-Markdown 预览用于检查：
-
-- 目录是否被误当成正文；
-- 章节层级是否合理；
-- 页眉、页脚和重复文本是否过多；
-- 表格内容是否保留；
-- 图片是否关联到正确页码；
-- 图片过滤是否误删有用示例；
-- PyMuPDF 和 Docling 内容是否正确合并。
-
-Markdown 不是最终知识库来源。
-
-## 6. 融合
-
-```bash
-python3 scripts/fuse_manual.py \
-  --pymupdf data/parsed/DHO804_clean \
-  --docling data/parsed/DHO804_clean/docling_document_clean.json \
-  --output data/parsed/DHO804_fused/fused_document.json
-```
-
-输出：
-
-```text
-data/parsed/DHO804_fused/fused_document.json
-```
-
-这是一个完整的 JSON 文件，按页面保存：
-
-```text
-页面编号
-章节路径
-文本元素
-表格元素
-图片元素
-bbox
-来源工具
-```
-
-融合原则：
-
-1. 通过 PDF 页码对齐 PyMuPDF 和 Docling；
-2. Docling 提供章节、文本和表格结构；
-3. PyMuPDF 提供原始页面和图片证据；
-4. 不覆盖原始结果；
-5. 每个元素保留来源；
-6. 图片只保留筛选后的图片引用；
-7. 发现冲突时保留来源并标记，不静默覆盖。
-
-## 7. 创建完整知识块
-
-融合完成并人工检查通过后，生成整本说明书的知识块：
-
-```bash
-python3 scripts/build_manual_chunks.py \
-  --input data/parsed/DHO804_fused \
-  --output data/index/DHO804/chunks.jsonl
-```
-
-当前脚本默认处理完整说明书，不限制“测量”或其他章节。
-
-可选的范围过滤只用于实验：
-
-```bash
-python3 scripts/build_manual_chunks.py \
-  --input data/parsed/DHO804_fused \
-  --output data/index/DHO804/chunks_measurement.jsonl \
-  --include 测量 \
-  --include Measurement \
-  --exclude 维修 \
-  --pages 40-70
-```
-
-## 8. JSON 和 JSONL 的区别
-
-当前最终输出不是一个单独的 `chunks.json`，而是：
-
-```text
-data/index/DHO804/chunks.jsonl
-```
-
-它是 JSON Lines 格式：
-
-```text
-第 1 行：一个 JSON chunk
-第 2 行：一个 JSON chunk
-第 3 行：一个 JSON chunk
-```
-
-例如：
-
-```json
-{"chunk_id":"fused_00001","pages":[1],"text":"..."}
-{"chunk_id":"fused_00002","pages":[2],"text":"..."}
-```
-
-选择 JSONL 是因为它适合：
-
-- 按行读取；
-- 分批调用 LLM；
-- 单个 chunk 失败后重试；
-- 后续建立检索索引；
-- 追加处理结果。
-
-两者的定位不同：
-
-```text
-fused_document.json
-    完整页面级融合文档，一个 JSON
-
-chunks.jsonl
-    面向后续 LLM 提取的多个知识块，每行一个 JSON
-```
-
-## 9. LLM 提取之前的最终检查
-
-在执行 LLM 知识提取前，应确认：
-
-```text
-docling_clean_preview.md   已检查
-fused_preview.md           已检查
-fused_document.json        已生成
-chunks.jsonl               已生成
-```
-
-此时才进入：
-
-```text
-chunks.jsonl
-  → DeepSeek 结构化提取
-  → Pydantic Schema 校验
-  → 人工审核
-  → 正式 DHO804 知识库
-```
+Phase 3 的第一步是把知识记录统一为可检索的 Operation、State 和 Observation 结构。

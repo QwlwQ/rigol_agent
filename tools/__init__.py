@@ -1,2 +1,3 @@
-from .registry import Tool, ToolRegistry, create_registry
-__all__ = ["Tool", "ToolRegistry", "create_registry"]
+from .registry import Tool, ToolRegistry, register_phase3_tools
+
+__all__ = ["Tool", "ToolRegistry", "register_phase3_tools"]

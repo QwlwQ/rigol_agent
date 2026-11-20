@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_17": {
+      "title": "波形录制与播放",
+      "chunks": 4,
+      "records": 27,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_17/knowledge_chapter_17.jsonl"
+    }
+  },
+  "unassigned_chunks": 231,
+  "total_records": 27
+}

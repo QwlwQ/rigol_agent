@@ -1,0 +1,13 @@
+{
+  "chapters": {
+    "chapter_13": {
+      "title": "参考波形",
+      "chunks": 2,
+      "records": 22,
+      "errors": [],
+      "output": "data/knowledge/DHO804/chapter_results/chapter_13/knowledge_chapter_13.jsonl"
+    }
+  },
+  "unassigned_chunks": 233,
+  "total_records": 22
+}

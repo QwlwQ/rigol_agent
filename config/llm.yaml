@@ -1,4 +1,0 @@
-provider: deepseek
-api_key_env: RIGOL_API_KEY
-model_env: RIGOL_MODEL
-base_url_env: RIGOL_BASE_URL
